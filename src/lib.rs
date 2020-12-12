@@ -63,6 +63,38 @@ Pick three.";
     }
 
     #[test]
+    fn multiple_results() {
+	let query = "nice";
+	let contents = "\
+You can have me if you want me
+All I need is a little street money
+I need a place for all the shit in my closet
+I need a place to put all my electronics
+Ain't nice
+I ain't nice
+You ain't that nice but you got a nice face
+Hope I can fit all my shit at your place
+Got a collection of vintage calculators
+If you don't like it then babe I'll see you later";
+
+	let expected = vec!["Ain't nice", "I ain't nice", "You ain't that nice but you got a nice face"];
+
+	assert_eq!(expected, search(query, contents));
+    }
+
+    #[test]
+    fn no_results() {
+	let query = "gazebo";
+	let contents = "\
+A vision I had in my sleep last night - as distinguished from a dream which is mere sorting and cataloguing of the day's events by the subconscious.
+This was a vision, fresh and clear as a mountain stream - the mind revealing itself to itself.
+In my vision, I was on the veranda of a vast estate, a palazzo of some fantastic proportion.";
+
+	// well, that's pretty ugly looking, isn't it? Vec::<String>::new() ...
+	assert_eq!(Vec::<String>::new(), search(query, contents));
+    }
+
+    #[test]
     fn fewerThan3Args_returnsErr() {
         let not_enough_args: Vec<String> = vec![String::from("test")];
 
