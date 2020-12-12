@@ -27,20 +27,21 @@ pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
     let mut contents = String::new();
     f.read_to_string(&mut contents)?;
 
-    println!("With text:\n\n{}", contents);
+    for line in search(&config.query, &contents) {
+        println!("{}", line);
+    }
 
     Ok(())
 }
 
-
 // The return value is a collection of references of str slices; therefore, the references within the collection must have the same lifetime as the input contents.
-pub fn search<'a>(query: &str, contents: &'a str) -> Vec<&'a str> {
+fn search<'a>(query: &str, contents: &'a str) -> Vec<&'a str> {
     let mut results = Vec::new();
-    
+
     for line in contents.lines() {
-	if line.contains(query) {
-	    results.push(line);
-	}
+        if line.contains(query) {
+            results.push(line);
+        }
     }
 
     results
@@ -64,8 +65,8 @@ Pick three.";
 
     #[test]
     fn multiple_results() {
-	let query = "nice";
-	let contents = "\
+        let query = "nice";
+        let contents = "\
 You can have me if you want me
 All I need is a little street money
 I need a place for all the shit in my closet
@@ -77,21 +78,25 @@ Hope I can fit all my shit at your place
 Got a collection of vintage calculators
 If you don't like it then babe I'll see you later";
 
-	let expected = vec!["Ain't nice", "I ain't nice", "You ain't that nice but you got a nice face"];
+        let expected = vec![
+            "Ain't nice",
+            "I ain't nice",
+            "You ain't that nice but you got a nice face",
+        ];
 
-	assert_eq!(expected, search(query, contents));
+        assert_eq!(expected, search(query, contents));
     }
 
     #[test]
     fn no_results() {
-	let query = "gazebo";
-	let contents = "\
+        let query = "gazebo";
+        let contents = "\
 A vision I had in my sleep last night - as distinguished from a dream which is mere sorting and cataloguing of the day's events by the subconscious.
 This was a vision, fresh and clear as a mountain stream - the mind revealing itself to itself.
 In my vision, I was on the veranda of a vast estate, a palazzo of some fantastic proportion.";
 
-	// well, that's pretty ugly looking, isn't it? Vec::<String>::new() ...
-	assert_eq!(Vec::<String>::new(), search(query, contents));
+        // well, that's pretty ugly looking, isn't it? Vec::<String>::new() ...
+        assert_eq!(Vec::<String>::new(), search(query, contents));
     }
 
     #[test]
